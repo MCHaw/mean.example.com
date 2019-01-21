@@ -96,10 +96,11 @@ var authApp = (function() {
       formData.forEach(function(value, key){
         object[key]=value;
       });
-
+ 
       xhr.send(JSON.stringify(object));
       xhr.onload = function(){
         let data = JSON.parse(xhr.response);
+       
         if(data.success===true){
           window.location.href = '/';
         }else{
