@@ -10,16 +10,23 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var Users = require('./models/users');
+var Articles = require('./models/articles');
 
 var apiAuthRouter = require('./routes/api/auth');
 var apiUsersRouter = require('./routes/api/users');
+var apiArticlesRouter = require('./routes/api/articles');
+var articlesRouter = require('./routes/articles');
 var authRouter = require('./routes/auth');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 
-var config = require('./config.dev');
+if(process.env.NODE_ENV==='production'){
+  var config = require('../config.prod');
+}else{
+  var config = require('./config.dev');
+}
 
 mongoose.connect(config.mongodb, { useNewUrlParser: true });
 
@@ -116,6 +123,8 @@ app.use(function(req,res,next){
 app.use('/', indexRouter);
 app.use('/api/auth', apiAuthRouter);
 app.use('/api/users', apiUsersRouter);
+app.use('/api/articles', apiArticlesRouter);
+app.use('/articles', articlesRouter);
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 

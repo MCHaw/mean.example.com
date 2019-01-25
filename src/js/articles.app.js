@@ -1,8 +1,8 @@
-var usersApp = (function() {
+var articlesApp = (function() {
 
-    function viewUsers(){
+    function viewArticles(){
 
-        let uri = `${window.location.origin}/api/users`;
+        let uri = `${window.location.origin}/api/articles`;
         let xhr = new XMLHttpRequest();
         xhr.open('GET', uri);
       
@@ -16,19 +16,19 @@ var usersApp = (function() {
         xhr.onload = function(){
             let app = document.getElementById('app');
             let data = JSON.parse(xhr.response);
-            let users = data.users;
+            let articles = data.articles;
             let table = '';
             let rows = '';
           
             //Loop each user record into it's own HTML table row, each user should
             //have a link a user view
-            for (let i=0; i<users.length; i++) {
+            for (let i=0; i<articles.length; i++) {
               rows = rows + `<tr>
                 <td>
-                  <a href="#view-${users[i]['_id']}">${users[i]['last_name']}, ${users[i]['first_name']}</a>
+                  <a href="#view-${articles[i]['_id']}">${articles[i]['title']}</a>
                 </td>
-                <td>${users[i]['username']}</td>
-                <td>${users[i]['email']}</td>
+                <td>${articles[i]['created']}</td>
+                <td>${articles[i]['body']}</td>
               </tr>`;
             }
           
@@ -36,18 +36,18 @@ var usersApp = (function() {
             //table
             table = `<div class="card">
               <div class="card-header clearfix">
-                <h2 class="h3 float-left">Users</h2>
+                <h2 class="h3 float-left">Articles</h2>
                 <div class="float-right">
-                  <a href="#create" class="btn btn-primary">New User</a>
+                  <a href="#create" class="btn btn-primary">New Article</a>
                 </div>
               </div>
               <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">
                   <thead>
                     <tr>
-                      <td>Name</td>
-                      <td>Username</td>
-                      <td>Email</td>
+                      <td>Title</td>
+                      <td>Created</td>
+                      <td>Body</td>
                     </tr>
                   </thead>
                   <tbody>${rows}</tbody>
@@ -60,44 +60,39 @@ var usersApp = (function() {
           }
       }
 
-      function createUser(){
+      function createArticle(){
         var app = document.getElementById('app');
       
         var form =  `
             <div class="card">
               <div class="card-header clearfix">
-                <h2 class="h3 float-left">Create a New User</h2>
+                <h2 class="h3 float-left">Create a New Article</h2>
                 <div class="float-right">
                   <a href="#" class="btn btn-primary">Cancel</a>
                 </div>
               </div>
               <div class="card-body">
-                <form id="createUser" class="card-body">
+                <form id="createArticles" class="card-body">
                   <div id="formMsg" class="alert alert-danger text-center">Your form has errors</div>
       
                   <div class="row">
                     <div class="form-group col-md-6">
-                      <label for="first_name">First Name</label>
-                      <input type="text" id="first_name" name="first_name" class="form-control" required>
+                      <label for="title">Title</label>
+                      <input type="text" id="title" name="title" class="form-control" required>
                     </div>
       
                     <div class="form-group col-md-6">
-                      <label for="last_name">Last Name</label>
-                      <input type="text" id="last_name" name="last_name" class="form-control" required>
+                      <label for="published">Published</label>
+                      <input type="text" id="published" name="published" class="form-control" required>
                     </div>
                   </div>
       
                   <div class="row">
                     <div class="form-group col-md-6">
-                      <label for="username">Username</label>
-                      <input type="text" id="username" name="username" class="form-control" required>
+                      <label for="body">Body</label>
+                      <input type="text" id="body" name="body" class="form-control" required>
                     </div>
       
-                    <div class="form-group col-md-6">
-                      <label for="email">Email</label>
-                      <input type="email" id="email" name="email" class="form-control" required>
-                    </div>
-                  </div>
       
                   <div class="text-right">
                     <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-sm-block">
@@ -108,12 +103,12 @@ var usersApp = (function() {
         `;
       
         app.innerHTML=form;
-        processRequest('createUser', '/api/users','POST');
+        processRequest('createArticles', '/api/articles','POST');
       }
 
-      function viewUser(id){
+      function viewArticle(id){
 
-        let uri = `${window.location.origin}/api/users/${id}`;
+        let uri = `${window.location.origin}/api/articles/${id}`;
         let xhr = new XMLHttpRequest();
         xhr.open('GET', uri);
       
@@ -131,14 +126,13 @@ var usersApp = (function() {
       
           card = `<div class="card">
             <div class="card-header clearfix">
-              <h2 class="h3 float-left">${data.user.first_name} ${data.user.last_name}</h2>
+              <h2 class="h3 float-left">${data.article.title}</h2>
               <div class="float-right">
-                <a href="#edit-${data.user._id}" class="btn btn-primary">Edit</a>
+                <a href="#edit-${data.article._id}" class="btn btn-primary">Edit</a>
               </div>
             </div>
             <div class="card-body">
-              <div>${data.user.username}</div>
-              <div>${data.user.email}</div>
+              <div>${data.article.title} - ${data.article.created}</div>
             </div>
           </div>`;
       
@@ -146,9 +140,9 @@ var usersApp = (function() {
         }
       }
       
-      function editUser(id){
+      function editArticle(id){
 
-        let uri = `${window.location.origin}/api/users/${id}`;
+        let uri = `${window.location.origin}/api/articles/${id}`;
         let xhr = new XMLHttpRequest();
         xhr.open('GET', uri);
       
@@ -172,33 +166,28 @@ var usersApp = (function() {
                 </div>
               </div>
               <div class="card-body">
-                <form id="editUser" class="card-body">
-                  <input type="hidden" id="_id" name="_id" value="${data.user._id}">
+                <form id="editArticles" class="card-body">
+                  <input type="hidden" id="_id" name="_id" value="${data.article._id}">
                   <div id="formMsg" class="alert alert-danger text-center">Your form has errors</div>
         
                   <div class="row">
                     <div class="form-group col-md-6">
-                      <label for="first_name">First Name</label>
-                      <input type="text" id="first_name" name="first_name" class="form-control" value="${data.user.first_name}" required>
+                      <label for="first_name">Title</label>
+                      <input type="text" id="title" name="title" class="form-control" value="${data.article.title}" required>
                     </div>
         
                     <div class="form-group col-md-6">
-                      <label for="last_name">Last Name</label>
-                      <input type="text" id="last_name" name="last_name" class="form-control" value="${data.user.last_name}" required>
+                      <label for="cretws">Created</label>
+                      <input type="text" id="created" name="created" class="form-control" value="${data.article.created}" required>
                     </div>
                   </div>
         
                   <div class="row">
                     <div class="form-group col-md-6">
-                      <label for="username">Username</label>
-                      <input type="text" id="username" name="username" class="form-control" value="${data.user.username}" required>
+                      <label for="body">Body</label>
+                      <input type="text" id="body" name="body" class="form-control" value="${data.article.body}" required>
                     </div>
         
-                    <div class="form-group col-md-6">
-                      <label for="email">Email</label>
-                      <input type="email" id="email" name="email" class="form-control" value="${data.user.email}" required>
-                    </div>
-                  </div>
         
                   <div class="text-right">
                     <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-sm-block">
@@ -207,19 +196,19 @@ var usersApp = (function() {
               </div>
             </div>
             <div>
-                <a href="#delete-${data.user._id}" class="text-danger">Delete</a>
+                <a href="#delete-${data.article._id}" class="text-danger">Delete</a>
             </div>
           `;
         
           app.innerHTML=form;
 
-          processRequest('editUser', '/api/users','PUT');
+          processRequest('editArticles', '/api/articles','PUT');
         }
       }
 
       function deleteView(id){
 
-        let uri = `${window.location.origin}/api/users/${id}`;
+        let uri = `${window.location.origin}/api/articles/${id}`;
         let xhr = new XMLHttpRequest();
         xhr.open('GET', uri);
       
@@ -237,25 +226,25 @@ var usersApp = (function() {
       
           card = `<div class="card bg-transparent border-danger text-danger bg-danger">
             <div class="card-header bg-transparent border-danger">
-              <h2 class="h3 text-center">You Are About to Delete a User</h2>
+              <h2 class="h3 text-center">You Are About to Delete an Article</h2>
             </div>
             <div class="card-body text-center">
               <div>
                 Are you sure you want to delete
-                <strong>${data.user.first_name} ${data.user.last_name}</strong>
+                <strong>${data.article.title} ${data.article.created}</strong>
               </div>
       
-              <div>Username: <strong>${data.user.username}</strong></div>
-              <div>Email: <strong>${data.user.email}</strong></div>
+              <div>Title: <strong>${data.article.title}</strong></div>
+              <div>Created: <strong>${data.article.created}</strong></div>
       
               <div class="text-center">
                 <br>
-                <a onclick="usersApp.deleteUser('${data.user._id}');" class="btn btn-lg btn-danger text-white">
-                Yes delete ${data.user.username}
+                <a onclick="articlesApp.deleteArticle('${data.article._id}');" class="btn btn-lg btn-danger text-white">
+                Yes delete ${data.article.title}
               </a>
 
               <br><br><br>
-              <a class="btn text-muted" href="/users/app">cancel</a>  
+              <a class="btn text-muted" href="/articles/cms">cancel</a>  
               </div>
       
             </div>
@@ -265,9 +254,9 @@ var usersApp = (function() {
         }
       }
 
-      function deleteUser(id){
+      function deleteArticle(id){
 
-        let uri = `${window.location.origin}/api/users/${id}`;
+        let uri = `${window.location.origin}/api/articles/${id}`;
         let xhr = new XMLHttpRequest();
         xhr.open('DELETE', uri);
       
@@ -315,7 +304,7 @@ var usersApp = (function() {
           xhr.onload = function(){
             let data = JSON.parse(xhr.response);
             if(data.success===true){
-              window.location.href = '/users/app';
+              window.location.href = '/articles/cms';
             }else{
               document.getElementById('formMsg').style.display='block';
             }
@@ -324,8 +313,8 @@ var usersApp = (function() {
       }
 
     return {
-      deleteUser: function(id){
-        deleteUser(id);
+      deleteArticle: function(id){
+        deleteArticle(id);
       },
         load: function(){
             let hash = window.location.hash;
@@ -333,15 +322,15 @@ var usersApp = (function() {
           
             switch(hashArray[0]){
                 case '#create':
-                createUser();
+                createArticle();
                 break;
           
                 case '#view':
-                viewUser(hashArray[1]);
+                viewArticle(hashArray[1]);
                 break;
           
               case '#edit':
-                editUser(hashArray[1]);
+                editArticle(hashArray[1]);
                 break;
           
               case '#delete':
@@ -349,7 +338,7 @@ var usersApp = (function() {
                 break;
           
               default:
-                viewUsers();
+                viewArticles();
                 break;
             }
           }
@@ -357,8 +346,8 @@ var usersApp = (function() {
   
   })();
   
-  usersApp.load();
+  articlesApp.load();
 
 window.addEventListener("hashchange", function(){
-  usersApp.load();
+    articlesApp.load();
 });

@@ -14,6 +14,7 @@ gulp.task('default', ['watch']);
 gulp.task('build-js', [
   'build-main-js',
   'build-auth-js',
+  'build-articles-js', 
   'build-users-js'
 ]);
 
@@ -52,6 +53,18 @@ gulp.task('build-users-js', function() {
     'src/js/users.app.js',
   ])
   .pipe(concat('users.app.min.js'))
+  .pipe(uglify())
+  .pipe(gulp.dest('public/dist/js'));
+
+  return merge(userApp);
+});
+
+gulp.task('build-articles-js', function() {
+
+  var articleApp = gulp.src([
+    'src/js/articles.app.js',
+  ])
+  .pipe(concat('articles.app.min.js'))
   .pipe(uglify())
   .pipe(gulp.dest('public/dist/js'));
 
