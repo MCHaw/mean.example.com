@@ -87,10 +87,22 @@ app.use(function(req,res,next){
   next();
 });
 
-
+//Set up CORS
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+  if ('OPTIONS' == req.method) {
+   res.send(200);
+  } else {
+   next();
+  }
+ });
+ 
 //session based access control
 app.use(function(req,res,next){
-  //return next();
+ // return next();
 
   var whitelist = [
     '/',
@@ -103,7 +115,8 @@ app.use(function(req,res,next){
   
   var subs = [
     '/public/',
-    '/api/auth/'
+    '/api/auth/',
+    '/ionicAuth'
   ];
 
   for(var sub of subs){
@@ -119,6 +132,7 @@ app.use(function(req,res,next){
     return res.redirect('/auth#login');
 
 });
+
 
 app.use('/', indexRouter);
 app.use('/api/auth', apiAuthRouter);
